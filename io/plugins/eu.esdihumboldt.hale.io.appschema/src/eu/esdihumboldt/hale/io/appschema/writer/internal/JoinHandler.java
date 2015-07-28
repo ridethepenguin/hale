@@ -16,11 +16,9 @@
 package eu.esdihumboldt.hale.io.appschema.writer.internal;
 
 import static eu.esdihumboldt.hale.common.align.model.functions.JoinFunction.PARAMETER_JOIN;
-import static eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingUtils.findChildFeatureType;
-import static eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingUtils.findOwningFeatureType;
-import static eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingUtils.findOwningFeatureTypePath;
-import static eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingUtils.getTargetProperty;
-import static eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingUtils.isHRefAttribute;
+//import static eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingUtils.findChildFeatureType;
+import static eu.esdihumboldt.hale.io.appschema.writer.AppSchemaMappingUtils.getTargetProperty;
+import static eu.esdihumboldt.hale.io.appschema.writer.AppSchemaMappingUtils.isHRefAttribute;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,6 +38,7 @@ import eu.esdihumboldt.hale.common.schema.model.TypeDefinition;
 import eu.esdihumboldt.hale.io.appschema.impl.internal.generated.app_schema.AttributeExpressionMappingType;
 import eu.esdihumboldt.hale.io.appschema.impl.internal.generated.app_schema.AttributeMappingType;
 import eu.esdihumboldt.hale.io.appschema.impl.internal.generated.app_schema.TypeMappingsPropertyType.FeatureTypeMapping;
+import eu.esdihumboldt.hale.io.appschema.writer.AppSchemaMappingUtils;
 
 /**
  * Translates a type cell specifying a {@link Join} transformation function to
@@ -64,14 +63,14 @@ public class JoinHandler implements TypeTransformationHandler {
 	private PropertyEntityDefinition joinProperty;
 
 	/**
-	 * 
-	 * @see eu.esdihumboldt.hale.io.appschema.writer.internal.TypeTransformationHandler#handleTypeTransformation(eu.esdihumboldt.hale.common.align.model.Alignment,
-	 *      eu.esdihumboldt.hale.common.align.model.Cell,
-	 *      eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingWrapper)
+	 * @see eu.esdihumboldt.hale.io.appschema.writer.internal.TypeTransformationHandler#handleTypeTransformation(eu.esdihumboldt.hale.common.align.model.Cell,
+	 *      eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingContext)
 	 */
 	@Override
-	public FeatureTypeMapping handleTypeTransformation(Alignment alignment, Cell typeCell,
-			AppSchemaMappingWrapper context) {
+	public FeatureTypeMapping handleTypeTransformation(Cell typeCell,
+			AppSchemaMappingContext context) {
+		AppSchemaMappingWrapper mapping = context.getMappingWrapper();
+		Alignment alignment = context.getAlignment();
 
 		JoinParameter joinParameter = typeCell.getTransformationParameters().get(PARAMETER_JOIN)
 				.get(0).as(JoinParameter.class);
@@ -100,7 +99,7 @@ public class JoinHandler implements TypeTransformationHandler {
 		Entity containerTypeTarget = typeCell.getTarget().values().iterator().next();
 		TypeDefinition containerTypeTargetType = containerTypeTarget.getDefinition().getType();
 
-		FeatureTypeMapping containerFTMapping = context
+		FeatureTypeMapping containerFTMapping = mapping
 				.getOrCreateFeatureTypeMapping(containerTypeTargetType);
 		containerFTMapping.setSourceType(containerType.getDefinition().getName().getLocalPart());
 
@@ -118,14 +117,20 @@ public class JoinHandler implements TypeTransformationHandler {
 					// source property belongs to nested type: determine
 					// target type
 					Property targetProperty = getTargetProperty(propertyCell);
-					nestedFT = findOwningFeatureType(targetProperty.getDefinition());
+					// nestedFT =
+					// findOwningFeatureType(targetProperty.getDefinition());
+					nestedFT = AppSchemaMappingUtils.findOwningType(targetProperty.getDefinition(),
+							context.getRelevantTargetTypes());
 					if (nestedFT != null
 							&& !nestedFT.getName().equals(containerTypeTargetType.getName())) {
 						// target property belongs to a feature type different
 						// from the already mapped one: build a new mapping
-						nestedFTPath = findOwningFeatureTypePath(targetProperty.getDefinition());
+						// nestedFTPath =
+						// findOwningFeatureTypePath(targetProperty.getDefinition());
+						nestedFTPath = AppSchemaMappingUtils.findOwningTypePath(
+								targetProperty.getDefinition(), context.getRelevantTargetTypes());
 
-						nestedFTMapping = context.getOrCreateFeatureTypeMapping(nestedFT);
+						nestedFTMapping = mapping.getOrCreateFeatureTypeMapping(nestedFT);
 						nestedFTMapping.setSourceType(nestedType.getDefinition().getName()
 								.getLocalPart());
 
@@ -142,11 +147,14 @@ public class JoinHandler implements TypeTransformationHandler {
 								hrefPropertyPath.size() - 1);
 						TypeDefinition hrefParentType = hrefProperty.getDefinition()
 								.getDefinition().getParentType();
-						TypeDefinition childFT = findChildFeatureType(hrefParentType);
+						// TypeDefinition childFT =
+						// findChildFeatureType(hrefParentType);
+						TypeDefinition childFT = AppSchemaMappingUtils.findChildType(
+								hrefParentType, context.getRelevantTargetTypes());
 
 						if (childFT != null) {
 							nestedFTPath = hrefContainerPath;
-							nestedFTMapping = context.getOrCreateFeatureTypeMapping(childFT);
+							nestedFTMapping = mapping.getOrCreateFeatureTypeMapping(childFT);
 							nestedFTMapping.setSourceType(nestedType.getDefinition().getName()
 									.getLocalPart());
 
@@ -161,9 +169,9 @@ public class JoinHandler implements TypeTransformationHandler {
 
 		// build join mapping
 		if (nestedFTMapping != null && nestedFTPath != null) {
-			AttributeMappingType containerJoinMapping = context.getOrCreateAttributeMapping(
+			AttributeMappingType containerJoinMapping = mapping.getOrCreateAttributeMapping(
 					containerTypeTargetType, nestedFTPath);
-			containerJoinMapping.setTargetAttribute(context.buildAttributeXPath(nestedFT,
+			containerJoinMapping.setTargetAttribute(mapping.buildAttributeXPath(nestedFT,
 					nestedFTPath));
 			// set isMultiple attribute
 			PropertyDefinition targetPropertyDef = nestedFTPath.get(nestedFTPath.size() - 1)
@@ -179,7 +187,8 @@ public class JoinHandler implements TypeTransformationHandler {
 			// TODO: support multiple joins (e.g. FEATURE_LINK[1],
 			// FEATURE_LINK[2],
 			// ...)
-			containerSourceExpr.setLinkField(AppSchemaMappingWrapper.FEATURE_LINK_FIELD);
+			String linkField = mapping.getNextFeatureLinkAttribute(nestedFT);
+			containerSourceExpr.setLinkField(linkField);
 			containerJoinMapping.setSourceExpression(containerSourceExpr);
 
 			AttributeMappingType nestedJoinMapping = new AttributeMappingType();
@@ -190,7 +199,7 @@ public class JoinHandler implements TypeTransformationHandler {
 			// TODO: support multiple joins (e.g. FEATURE_LINK[1],
 			// FEATURE_LINK[2],
 			// ...)
-			nestedJoinMapping.setTargetAttribute(AppSchemaMappingWrapper.FEATURE_LINK_FIELD);
+			nestedJoinMapping.setTargetAttribute(linkField);
 			nestedFTMapping.getAttributeMappings().getAttributeMapping().add(nestedJoinMapping);
 		}
 

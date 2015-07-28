@@ -63,6 +63,7 @@ public class AppSchemaMappingWrapper {
 	private final Map<String, Namespace> namespaceUriMap;
 	private final Map<String, Namespace> namespacePrefixMap;
 	private final Map<Integer, FeatureTypeMapping> featureTypeMappings;
+	private final Map<Integer, Integer> featureLinkCounter;
 	private final Map<Integer, AttributeMappingType> attributeMappings;
 
 	private final AppSchemaDataAccessType appSchemaMapping;
@@ -78,6 +79,7 @@ public class AppSchemaMappingWrapper {
 		this.namespaceUriMap = new HashMap<String, Namespace>();
 		this.namespacePrefixMap = new HashMap<String, Namespace>();
 		this.featureTypeMappings = new HashMap<Integer, FeatureTypeMapping>();
+		this.featureLinkCounter = new HashMap<Integer, Integer>();
 		this.attributeMappings = new HashMap<Integer, AttributeMappingType>();
 
 		if (this.appSchemaMapping.getNamespaces() == null) {
@@ -330,6 +332,18 @@ public class AppSchemaMappingWrapper {
 		}
 
 		return hashBase.hashCode();
+	}
+
+	public String getNextFeatureLinkAttribute(TypeDefinition featureType) {
+		Integer featureTypeKey = getFeatureTypeMappingHashKey(featureType, null);
+		if (!featureLinkCounter.containsKey(featureTypeKey)) {
+			featureLinkCounter.put(featureTypeKey, 0);
+		}
+		Integer counter = featureLinkCounter.get(featureTypeKey);
+		// update counter
+		featureLinkCounter.put(featureTypeKey, ++counter);
+
+		return String.format("%s[%d]", FEATURE_LINK_FIELD, counter);
 	}
 
 	/**

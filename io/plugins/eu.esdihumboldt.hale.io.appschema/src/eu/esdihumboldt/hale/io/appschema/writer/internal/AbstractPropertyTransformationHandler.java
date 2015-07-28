@@ -15,12 +15,12 @@
 
 package eu.esdihumboldt.hale.io.appschema.writer.internal;
 
-import static eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingUtils.findOwningFeatureType;
-import static eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingUtils.getTargetProperty;
-import static eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingUtils.getTargetType;
-import static eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingUtils.isGeometryType;
-import static eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingUtils.isGmlId;
-import static eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingUtils.isXmlAttribute;
+import static eu.esdihumboldt.hale.io.appschema.writer.AppSchemaMappingUtils.getSourceProperty;
+import static eu.esdihumboldt.hale.io.appschema.writer.AppSchemaMappingUtils.getTargetProperty;
+import static eu.esdihumboldt.hale.io.appschema.writer.AppSchemaMappingUtils.getTargetType;
+import static eu.esdihumboldt.hale.io.appschema.writer.AppSchemaMappingUtils.isGeometryType;
+import static eu.esdihumboldt.hale.io.appschema.writer.AppSchemaMappingUtils.isGmlId;
+import static eu.esdihumboldt.hale.io.appschema.writer.AppSchemaMappingUtils.isXmlAttribute;
 
 import java.util.List;
 
@@ -33,6 +33,7 @@ import eu.esdihumboldt.hale.common.align.model.Condition;
 import eu.esdihumboldt.hale.common.align.model.EntityDefinition;
 import eu.esdihumboldt.hale.common.align.model.Property;
 import eu.esdihumboldt.hale.common.align.model.impl.PropertyEntityDefinition;
+import eu.esdihumboldt.hale.common.align.model.impl.TypeEntityDefinition;
 import eu.esdihumboldt.hale.common.schema.model.Definition;
 import eu.esdihumboldt.hale.common.schema.model.PropertyDefinition;
 import eu.esdihumboldt.hale.common.schema.model.TypeDefinition;
@@ -41,6 +42,7 @@ import eu.esdihumboldt.hale.io.appschema.impl.internal.generated.app_schema.Attr
 import eu.esdihumboldt.hale.io.appschema.impl.internal.generated.app_schema.AttributeMappingType.ClientProperty;
 import eu.esdihumboldt.hale.io.appschema.impl.internal.generated.app_schema.NamespacesPropertyType.Namespace;
 import eu.esdihumboldt.hale.io.appschema.impl.internal.generated.app_schema.TypeMappingsPropertyType.FeatureTypeMapping;
+import eu.esdihumboldt.hale.io.appschema.writer.AppSchemaMappingUtils;
 import eu.esdihumboldt.hale.io.xsd.constraint.XmlAttributeFlag;
 
 /**
@@ -75,23 +77,37 @@ public abstract class AbstractPropertyTransformationHandler implements
 	protected AttributeMappingType attributeMapping;
 
 	/**
-	 * 
 	 * @see eu.esdihumboldt.hale.io.appschema.writer.internal.PropertyTransformationHandler#handlePropertyTransformation(eu.esdihumboldt.hale.common.align.model.Cell,
-	 *      eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingWrapper)
+	 *      eu.esdihumboldt.hale.common.align.model.Cell,
+	 *      eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingContext)
 	 */
 	@Override
 	public AttributeMappingType handlePropertyTransformation(Cell typeCell, Cell propertyCell,
-			AppSchemaMappingWrapper mapping) {
-		this.mapping = mapping;
+			AppSchemaMappingContext context) {
+		this.mapping = context.getMappingWrapper();
 		this.propertyCell = propertyCell;
 		// TODO: does this hold for any transformation function?
 		this.targetProperty = getTargetProperty(propertyCell);
-
 		PropertyEntityDefinition targetPropertyEntityDef = targetProperty.getDefinition();
 		PropertyDefinition targetPropertyDef = targetPropertyEntityDef.getDefinition();
+
 		TypeDefinition featureType = null;
 		if (AppSchemaMappingUtils.isJoin(typeCell)) {
-			featureType = findOwningFeatureType(targetPropertyEntityDef);
+			TypeDefinition sourceType = null;
+			// TODO: this may not work as expected for trasformation functions
+			// with none or multiple source properties
+			Property sourceProperty = getSourceProperty(propertyCell);
+			if (sourceProperty != null) {
+				sourceType = sourceProperty.getDefinition().getDefinition().getParentType();
+			}
+			TypeEntityDefinition nestedEntityType = AppSchemaMappingUtils.getNestedType(typeCell);
+			TypeDefinition nestedType = (nestedEntityType != null) ? nestedEntityType
+					.getDefinition() : null;
+			if (sourceType != null && sourceType.equals(nestedType)) {
+				// featureType = findOwningFeatureType(targetPropertyEntityDef);
+				featureType = AppSchemaMappingUtils.findOwningType(targetPropertyEntityDef,
+						context.getRelevantTargetTypes());
+			}
 		}
 		if (featureType == null) {
 			featureType = getTargetType(typeCell).getDefinition().getType();

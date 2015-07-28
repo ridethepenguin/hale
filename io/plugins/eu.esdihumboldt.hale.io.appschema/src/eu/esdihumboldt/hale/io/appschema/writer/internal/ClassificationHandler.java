@@ -19,7 +19,7 @@ import static eu.esdihumboldt.hale.common.align.model.functions.ClassificationMa
 import static eu.esdihumboldt.hale.common.align.model.functions.ClassificationMappingFunction.USE_FIXED_VALUE_ACTION_PREFIX;
 import static eu.esdihumboldt.hale.common.align.model.functions.ClassificationMappingFunction.USE_NULL_ACTION;
 import static eu.esdihumboldt.hale.common.align.model.functions.ClassificationMappingFunction.USE_SOURCE_ACTION;
-import static eu.esdihumboldt.hale.io.appschema.writer.internal.AppSchemaMappingUtils.asCqlLiteral;
+import static eu.esdihumboldt.hale.io.appschema.writer.AppSchemaMappingUtils.asCqlLiteral;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +37,7 @@ import eu.esdihumboldt.hale.common.core.io.Value;
 import eu.esdihumboldt.hale.common.core.service.ServiceManager;
 import eu.esdihumboldt.hale.common.lookup.LookupTable;
 import eu.esdihumboldt.hale.common.schema.model.PropertyDefinition;
+import eu.esdihumboldt.hale.io.appschema.writer.AppSchemaMappingUtils;
 
 /**
  * TODO Type description

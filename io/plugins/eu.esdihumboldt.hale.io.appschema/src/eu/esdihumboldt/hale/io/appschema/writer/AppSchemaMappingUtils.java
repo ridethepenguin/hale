@@ -13,7 +13,9 @@
  *     Data Harmonisation Panel <http://www.dhpanel.eu>
  */
 
-package eu.esdihumboldt.hale.io.appschema.writer.internal;
+package eu.esdihumboldt.hale.io.appschema.writer;
+
+import static eu.esdihumboldt.hale.common.align.model.functions.JoinFunction.PARAMETER_JOIN;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -26,10 +28,13 @@ import com.google.common.collect.ListMultimap;
 import eu.esdihumboldt.hale.common.align.model.Cell;
 import eu.esdihumboldt.hale.common.align.model.ChildContext;
 import eu.esdihumboldt.hale.common.align.model.Entity;
+import eu.esdihumboldt.hale.common.align.model.ParameterValue;
 import eu.esdihumboldt.hale.common.align.model.Property;
 import eu.esdihumboldt.hale.common.align.model.Type;
 import eu.esdihumboldt.hale.common.align.model.functions.JoinFunction;
+import eu.esdihumboldt.hale.common.align.model.functions.join.JoinParameter;
 import eu.esdihumboldt.hale.common.align.model.impl.PropertyEntityDefinition;
+import eu.esdihumboldt.hale.common.align.model.impl.TypeEntityDefinition;
 import eu.esdihumboldt.hale.common.schema.model.ChildDefinition;
 import eu.esdihumboldt.hale.common.schema.model.PropertyDefinition;
 import eu.esdihumboldt.hale.common.schema.model.TypeDefinition;
@@ -258,18 +263,6 @@ public class AppSchemaMappingUtils {
 		return Collections.emptyList();
 	}
 
-	private static int findOwningFeatureTypeIndex(List<ChildContext> propertyPath) {
-		for (int i = propertyPath.size() - 1; i >= 0; i--) {
-			ChildContext childContext = propertyPath.get(i);
-			TypeDefinition parentType = childContext.getChild().getParentType();
-			if (isFeatureType(parentType)) {
-				return i;
-			}
-		}
-
-		return -1;
-	}
-
 	/**
 	 * Looks for a feature type among the children of the provided type.
 	 * 
@@ -290,6 +283,88 @@ public class AppSchemaMappingUtils {
 					if (childPropertyDef != null) {
 						TypeDefinition childPropertyType = childPropertyDef.getPropertyType();
 						if (isFeatureType(childPropertyType)) {
+							return childPropertyType;
+						}
+					}
+				}
+			}
+		}
+
+		return null;
+	}
+
+	private static int findOwningFeatureTypeIndex(List<ChildContext> propertyPath) {
+		for (int i = propertyPath.size() - 1; i >= 0; i--) {
+			ChildContext childContext = propertyPath.get(i);
+			TypeDefinition parentType = childContext.getChild().getParentType();
+			if (isFeatureType(parentType)) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	public static TypeDefinition findOwningType(PropertyEntityDefinition propertyEntityDef,
+			Collection<? extends TypeDefinition> allowedTypes) {
+		List<ChildContext> propertyPath = propertyEntityDef.getPropertyPath();
+
+		return findOwningType(propertyPath, allowedTypes);
+	}
+
+	public static TypeDefinition findOwningType(List<ChildContext> propertyPath,
+			Collection<? extends TypeDefinition> allowedTypes) {
+		int ftIdx = findOwningTypeIndex(propertyPath, allowedTypes);
+
+		if (ftIdx >= 0) {
+			return propertyPath.get(ftIdx).getChild().getParentType();
+		}
+		else {
+			return null;
+		}
+	}
+
+	private static int findOwningTypeIndex(List<ChildContext> propertyPath,
+			Collection<? extends TypeDefinition> allowedTypes) {
+		for (int i = propertyPath.size() - 1; i >= 0; i--) {
+			ChildContext childContext = propertyPath.get(i);
+			TypeDefinition parentType = childContext.getChild().getParentType();
+			if (allowedTypes.contains(parentType)) {
+				return i;
+			}
+		}
+
+		return -1;
+	}
+
+	public static List<ChildContext> findOwningTypePath(PropertyEntityDefinition propertyEntityDef,
+			Collection<? extends TypeDefinition> allowedTypes) {
+		List<ChildContext> propertyPath = propertyEntityDef.getPropertyPath();
+
+		return findOwningTypePath(propertyPath, allowedTypes);
+	}
+
+	public static List<ChildContext> findOwningTypePath(List<ChildContext> propertyPath,
+			Collection<? extends TypeDefinition> allowedTypes) {
+		int ftIdx = findOwningTypeIndex(propertyPath, allowedTypes);
+
+		if (ftIdx >= 0) {
+			return getContainerPropertyPath(propertyPath.subList(0, ftIdx));
+		}
+
+		return Collections.emptyList();
+	}
+
+	public static TypeDefinition findChildType(TypeDefinition typeDef,
+			Collection<? extends TypeDefinition> allowedTypes) {
+		if (typeDef != null) {
+			Collection<? extends ChildDefinition<?>> children = typeDef.getChildren();
+			if (children != null) {
+				for (ChildDefinition<?> child : children) {
+					PropertyDefinition childPropertyDef = child.asProperty();
+					if (childPropertyDef != null) {
+						TypeDefinition childPropertyType = childPropertyDef.getPropertyType();
+						if (allowedTypes.contains(childPropertyType)) {
 							return childPropertyType;
 						}
 					}
@@ -404,5 +479,50 @@ public class AppSchemaMappingUtils {
 	 */
 	public static boolean isJoin(Cell typeCell) {
 		return typeCell != null && JoinFunction.ID.equals(typeCell.getTransformationIdentifier());
+	}
+
+	public static TypeEntityDefinition getContainerType(Cell joinCell) {
+		JoinParameter joinParam = getJoinParameter(joinCell);
+
+		if (joinParam.types != null && joinParam.types.size() > 0) {
+			return joinParam.types.get(0);
+		}
+		else {
+			return null;
+		}
+	}
+
+	public static TypeEntityDefinition getNestedType(Cell joinCell) {
+		JoinParameter joinParam = getJoinParameter(joinCell);
+
+		if (joinParam.types != null && joinParam.types.size() > 1) {
+			return joinParam.types.get(1);
+		}
+		else {
+			return null;
+		}
+	}
+
+	public static List<TypeEntityDefinition> getNestedTypes(Cell joinCell) {
+		JoinParameter joinParam = getJoinParameter(joinCell);
+
+		if (joinParam.types != null && joinParam.types.size() > 1) {
+			return joinParam.types.subList(1, joinParam.types.size());
+		}
+		else {
+			return null;
+		}
+	}
+
+	public static JoinParameter getJoinParameter(Cell joinCell) {
+		if (joinCell != null && joinCell.getTransformationParameters() != null) {
+			List<ParameterValue> joinParameterList = joinCell.getTransformationParameters().get(
+					PARAMETER_JOIN);
+			if (joinParameterList != null && joinParameterList.size() > 0) {
+				return joinParameterList.get(0).as(JoinParameter.class);
+			}
+		}
+
+		return null;
 	}
 }
