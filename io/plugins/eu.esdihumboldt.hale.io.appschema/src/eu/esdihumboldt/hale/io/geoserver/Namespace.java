@@ -38,6 +38,10 @@ public class Namespace extends AbstractResource {
 	 * "Namespace URI" attribute.
 	 */
 	public static final String URI = "uri";
+	/**
+	 * "Namespace is isolated" attribute.
+	 */
+	public static final String ISOLATED = "isIsolated";
 
 	private static final String TEMPLATE_LOCATION = "/eu/esdihumboldt/hale/io/geoserver/template/data/namespace-template.vm";
 
@@ -47,6 +51,7 @@ public class Namespace extends AbstractResource {
 		allowedAttributes.add(ID);
 		allowedAttributes.add(PREFIX);
 		allowedAttributes.add(URI);
+		allowedAttributes.add(ISOLATED);
 	}
 
 	/**

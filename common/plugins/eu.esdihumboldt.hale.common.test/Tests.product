@@ -3,11 +3,12 @@
 
 <product name="Tests" uid="eu.esdihumboldt.hale.tests" id="eu.esdihumboldt.hale.common.test.Tests" application="de.fhg.igd.equinox.test" version="3.4.0.qualifier" useFeatures="false" includeLaunchers="true">
 
+
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <programArgs>-consoleLog -clean
+      <programArgs>-consoleLog -clean -class GeoServer*Test
       </programArgs>
       <vmArgs>-Xmx1200M
 -Dosgi.framework.extensions=org.eclipse.equinox.weaving.hook
@@ -21,12 +22,14 @@
 
    <windowImages/>
 
+
    <launcher name="hale_tests">
       <solaris/>
       <win useIco="false">
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
    </vm>

@@ -62,11 +62,12 @@ public abstract class AbstractAppSchemaConfigurator extends AbstractAlignmentWri
 		return false;
 	}
 
-	@Override
-	protected IOReport execute(ProgressIndicator progress, IOReporter reporter)
-			throws IOProviderConfigurationException, IOException {
-		progress.begin("Translate hale alignment to App-Schema Configuration",
-				ProgressIndicator.UNKNOWN);
+	public AppSchemaMappingGenerator getMappingGenerator() {
+		return generator;
+	}
+
+	public void generateMapping(IOReporter reporter) throws IOProviderConfigurationException,
+			IOException {
 		if (getAlignment() == null) {
 			throw new IOProviderConfigurationException("No alignment was provided.");
 		}
@@ -86,8 +87,17 @@ public abstract class AbstractAppSchemaConfigurator extends AbstractAlignmentWri
 
 		generator = new AppSchemaMappingGenerator(getAlignment(), getTargetSchema(),
 				dataStoreParam, featureChainingParam);
+		generator.generateMapping(reporter);
+	}
+
+	@Override
+	protected IOReport execute(ProgressIndicator progress, IOReporter reporter)
+			throws IOProviderConfigurationException, IOException {
+		progress.begin("Translate hale alignment to App-Schema Configuration",
+				ProgressIndicator.UNKNOWN);
+
 		try {
-			generator.generateMapping(reporter);
+			generateMapping(reporter);
 
 			handleMapping(progress, reporter);
 		} catch (IOProviderConfigurationException pce) {
