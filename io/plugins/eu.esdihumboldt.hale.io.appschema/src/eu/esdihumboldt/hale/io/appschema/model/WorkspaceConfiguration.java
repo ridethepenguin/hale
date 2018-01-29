@@ -46,8 +46,8 @@ public class WorkspaceConfiguration {
 		}
 	}
 
-	public WorkspaceMetadata getWorkspace(String namespace) {
-		return workspaceMap.get(namespace);
+	public WorkspaceMetadata getWorkspace(String namespaceUri) {
+		return workspaceMap.get(namespaceUri);
 	}
 
 	public List<WorkspaceMetadata> getWorkspaces() {
@@ -55,7 +55,7 @@ public class WorkspaceConfiguration {
 		return workspaces;
 	}
 
-	public boolean hasWorkspace(String namespace) {
-		return workspaceMap.containsKey(namespace);
+	public boolean hasWorkspace(String namespaceUri) {
+		return workspaceMap.get(namespaceUri) != null;
 	}
 }

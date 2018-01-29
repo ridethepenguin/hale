@@ -44,6 +44,7 @@ import eu.esdihumboldt.hale.common.schema.io.SchemaIO;
 import eu.esdihumboldt.hale.io.appschema.AppSchemaIO;
 import eu.esdihumboldt.hale.io.appschema.impl.internal.generated.app_schema.SourceDataStoresPropertyType.DataStore;
 import eu.esdihumboldt.hale.io.appschema.model.FeatureChaining;
+import eu.esdihumboldt.hale.io.appschema.model.WorkspaceConfiguration;
 
 /**
  * Base class for HALE alignment to app-schema mapping translators.
@@ -85,8 +86,10 @@ public abstract class AbstractAppSchemaConfigurator extends AbstractAlignmentWri
 		// loading
 		resolvePropertyTypes(featureChainingParam, getTargetSchema(), SchemaSpaceID.TARGET);
 
+		WorkspaceConfiguration workspaceConfParam = getWorkspaceConfigurationParameter();
+
 		generator = new AppSchemaMappingGenerator(getAlignment(), getTargetSchema(),
-				dataStoreParam, featureChainingParam);
+				dataStoreParam, featureChainingParam, workspaceConfParam);
 		generator.generateMapping(reporter);
 	}
 
@@ -147,6 +150,15 @@ public abstract class AbstractAppSchemaConfigurator extends AbstractAlignmentWri
 		else {
 			return parameterValue.as(Boolean.class);
 		}
+	}
+
+	/**
+	 * Retrieves the Workspace configuration.
+	 * 
+	 * @return the workspace configuration
+	 */
+	protected WorkspaceConfiguration getWorkspaceConfigurationParameter() {
+		return getParameter(AppSchemaIO.PARAM_WORKSPACE).as(WorkspaceConfiguration.class);
 	}
 
 	/**

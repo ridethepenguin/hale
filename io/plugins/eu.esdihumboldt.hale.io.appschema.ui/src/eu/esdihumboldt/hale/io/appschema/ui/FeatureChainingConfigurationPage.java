@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import org.eclipse.jface.dialogs.IPageChangingListener;
 import org.eclipse.jface.dialogs.PageChangingEvent;
@@ -73,6 +72,8 @@ import eu.esdihumboldt.hale.io.appschema.model.ChainConfiguration;
 import eu.esdihumboldt.hale.io.appschema.model.FeatureChaining;
 import eu.esdihumboldt.hale.io.appschema.writer.AbstractAppSchemaConfigurator;
 import eu.esdihumboldt.hale.io.appschema.writer.AppSchemaMappingUtils;
+import eu.esdihumboldt.hale.io.appschema.writer.UniqueMappingNameGenerator;
+import eu.esdihumboldt.hale.io.appschema.writer.internal.RandomUniqueMappingNameGenerator;
 import eu.esdihumboldt.hale.ui.HaleUI;
 import eu.esdihumboldt.hale.ui.HaleWizardPage;
 import eu.esdihumboldt.hale.ui.common.definition.viewer.DefinitionComparator;
@@ -103,6 +104,7 @@ public class FeatureChainingConfigurationPage extends
 
 	private final List<ChainPage> pages = new ArrayList<ChainPage>();
 	private final FeatureChaining featureChaining = new FeatureChaining();
+	private final UniqueMappingNameGenerator mappingNameGenerator = new RandomUniqueMappingNameGenerator();
 	private IPageChangingListener changeListener;
 	private boolean goingBack = false;
 
@@ -537,7 +539,9 @@ public class FeatureChainingConfigurationPage extends
 			conf.setNestedTypeTarget(nestedTypeTarget);
 			uniqueMapping = checkUniqueMapping.getSelection();
 			if (uniqueMapping) {
-				conf.setMappingName(UUID.randomUUID().toString());
+				// TODO: verify this is correct
+				conf.setMappingName(mappingNameGenerator.generateUniqueMappingName(nestedTypeTarget
+						.getType().getName()));
 			}
 			else {
 				conf.setMappingName(null);
