@@ -230,6 +230,7 @@ public class AppSchemaMappingContext {
 				WorkspaceMetadata workspace = workspaceConf.getWorkspace(namespaceUri);
 				if (workspace != null && workspace.isIsolated()) {
 					mappingName = mappingNameGenerator.generateUniqueMappingName(typeName);
+					mappingNames.put(typeName, mappingName);
 				}
 			}
 		}

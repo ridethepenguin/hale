@@ -327,12 +327,17 @@ public class AppSchemaMappingWrapper {
 			featureTypeMapping.setAttributeMappings(new AttributeMappings());
 			// TODO: how do I know the datasource from which data will be read?
 			featureTypeMapping.setSourceDataStore(getDefaultDataStore().getId());
+			// Retrieve namespace this feature type belongs to and prepend its
+			// prefix to the feature type name; if a namespace with the same URI
+			// already existed with a valid prefix, that will be used instead of
+			// the one passed here
+			Namespace ns = getOrCreateNamespace(targetType.getName().getNamespaceURI(), targetType
+					.getName().getPrefix());
 			// TODO: I'm getting the element name with
 			// targetType.getDisplayName():
 			// isn't there a more elegant (and perhaps more reliable) way to
 			// know which element corresponds to a type?
-			featureTypeMapping.setTargetElement(targetType.getName().getPrefix() + ":"
-					+ targetType.getDisplayName());
+			featureTypeMapping.setTargetElement(ns.getPrefix() + ":" + targetType.getDisplayName());
 			if (mappingName != null && !mappingName.isEmpty()) {
 				featureTypeMapping.setMappingName(mappingName);
 			}

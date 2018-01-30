@@ -340,10 +340,12 @@ public class AppSchemaMappingGenerator {
 		String uri = ns.getUri();
 		String namespaceId = prefix + "_namespace";
 
-		return ResourceBuilder.namespace(prefix)
+		return ResourceBuilder
+				.namespace(prefix)
 				.setAttribute(eu.esdihumboldt.hale.io.geoserver.Namespace.ID, namespaceId)
 				.setAttribute(eu.esdihumboldt.hale.io.geoserver.Namespace.URI, uri)
-				.setAttribute(eu.esdihumboldt.hale.io.geoserver.Namespace.ISOLATED, uri).build();
+				.setAttribute(eu.esdihumboldt.hale.io.geoserver.Namespace.ISOLATED, isIsolated(uri))
+				.build();
 	}
 
 	private Workspace getWorkspace(String nsPrefix, String nsUri) {
