@@ -141,13 +141,19 @@ public class AppSchemaMappingWrapper {
 	Namespace getOrCreateNamespace(String namespaceURI, String prefix) {
 		if (namespaceURI != null && !namespaceURI.isEmpty()) {
 			if (!namespaceUriMap.containsKey(namespaceURI)) {
+				String basePrefix, uniquePrefix;
 				if (prefix == null || prefix.trim().isEmpty()) {
-					prefix = defaultPrefix;
+					basePrefix = defaultPrefix;
+					uniquePrefix = basePrefix + prefixCounter;
+					prefixCounter++;
+				}
+				else {
+					basePrefix = prefix;
+					uniquePrefix = basePrefix;
 				}
 				// make sure prefix is unique
-				String uniquePrefix = prefix;
 				while (namespacePrefixMap.containsKey(uniquePrefix)) {
-					uniquePrefix = prefix + prefixCounter;
+					uniquePrefix = basePrefix + prefixCounter;
 					prefixCounter++;
 				}
 

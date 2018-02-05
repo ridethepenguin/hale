@@ -32,7 +32,7 @@ import eu.esdihumboldt.hale.io.geoserver.ResourceBuilder;
  * 
  * @author Stefano Costa, GeoSolutions
  */
-public class GeoServerNamespaceTest extends AbstractResourceTest {
+public class NamespaceResourceTest extends ResourceTestBase {
 
 	private static final String TEST_ID = "namespace-1234";
 	private static final String TEST_PREFIX = "test_ns";

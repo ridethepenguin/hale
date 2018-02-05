@@ -36,7 +36,7 @@ import eu.esdihumboldt.hale.io.geoserver.Resource;
  * 
  * @author Stefano Costa, GeoSolutions
  */
-public class AbstractResourceTest {
+public class ResourceTestBase {
 
 	protected static final DocumentBuilderFactory dbf;
 

@@ -102,7 +102,7 @@ public class WorkspaceConfigurationPage
 	public WorkspaceConfigurationPage() {
 		super("workspace.conf");
 		setTitle("Configure workspaces");
-		setDescription("Edit the name of a workspace and mark it as isolated to avoid name clashes with "
+		setDescription("If needed, edit the name of a workspace and mark it as isolated to avoid name clashes with "
 				+ "feature types already published in GeoServer.");
 		setPageComplete(true);
 		workspaceConf = new WorkspaceConfiguration();
@@ -183,6 +183,7 @@ public class WorkspaceConfigurationPage
 			else {
 				getContainer().showPage(getPreviousPage());
 			}
+			return;
 		}
 
 		if (!firstShow) {

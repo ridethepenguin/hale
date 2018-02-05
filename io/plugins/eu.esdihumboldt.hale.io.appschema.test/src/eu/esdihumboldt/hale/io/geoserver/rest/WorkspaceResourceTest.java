@@ -32,7 +32,7 @@ import eu.esdihumboldt.hale.io.geoserver.Workspace;
  * 
  * @author Stefano Costa, GeoSolutions
  */
-public class GeoServerWorkspaceTest extends AbstractResourceTest {
+public class WorkspaceResourceTest extends ResourceTestBase {
 
 	private static final String TEST_ID = "workspace-1234";
 	private static final String TEST_NAME = "test_ws";
