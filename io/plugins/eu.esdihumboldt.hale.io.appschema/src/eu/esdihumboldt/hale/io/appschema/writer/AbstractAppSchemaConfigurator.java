@@ -63,10 +63,30 @@ public abstract class AbstractAppSchemaConfigurator extends AbstractAlignmentWri
 		return false;
 	}
 
+	/**
+	 * Returns the {@link AppSchemaMappingGenerator} instance created during the
+	 * latest invocation of {@link #generateMapping(IOReporter)}.
+	 * <p>
+	 * <strong>NOTE</strong>: may return {@code null} if
+	 * {@link #generateMapping(IOReporter)} has never been called.
+	 * </p>
+	 * 
+	 * @return the current mapping generator instance
+	 */
 	public AppSchemaMappingGenerator getMappingGenerator() {
 		return generator;
 	}
 
+	/**
+	 * Uses a fresh {@link AppSchemaMappingGenerator} instance to generates the
+	 * mapping configuration based on the current provider's configuration
+	 * parameters.
+	 * 
+	 * @param reporter the status reporter
+	 * @throws IOProviderConfigurationException if something is wrong with the
+	 *             provider configuration
+	 * @throws IOException if an error occurs loading the mapping template file
+	 */
 	public void generateMapping(IOReporter reporter) throws IOProviderConfigurationException,
 			IOException {
 		if (getAlignment() == null) {

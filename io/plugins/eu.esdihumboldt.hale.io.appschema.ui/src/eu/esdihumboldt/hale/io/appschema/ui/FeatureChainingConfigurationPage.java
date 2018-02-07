@@ -81,6 +81,7 @@ import eu.esdihumboldt.hale.ui.common.definition.viewer.DefinitionLabelProvider;
 import eu.esdihumboldt.hale.ui.common.definition.viewer.SchemaPatternFilter;
 import eu.esdihumboldt.hale.ui.common.definition.viewer.StyledDefinitionLabelProvider;
 import eu.esdihumboldt.hale.ui.function.generic.AbstractGenericFunctionWizard;
+import eu.esdihumboldt.hale.ui.io.ExportWizard;
 import eu.esdihumboldt.hale.ui.io.config.AbstractConfigurationPage;
 import eu.esdihumboldt.hale.ui.service.align.AlignmentService;
 import eu.esdihumboldt.hale.ui.service.entity.EntityDefinitionService;
@@ -99,8 +100,9 @@ import eu.esdihumboldt.hale.ui.util.viewer.tree.TreePathProviderAdapter;
  * 
  * @author Stefano Costa, GeoSolutions
  */
-public class FeatureChainingConfigurationPage extends
-		AbstractConfigurationPage<AbstractAppSchemaConfigurator, AppSchemaAlignmentExportWizard> {
+public class FeatureChainingConfigurationPage
+		extends
+		AbstractConfigurationPage<AbstractAppSchemaConfigurator, ExportWizard<AbstractAppSchemaConfigurator>> {
 
 	private final List<ChainPage> pages = new ArrayList<ChainPage>();
 	private final FeatureChaining featureChaining = new FeatureChaining();
@@ -279,6 +281,7 @@ public class FeatureChainingConfigurationPage extends
 
 	public class ChainPage extends HaleWizardPage<AbstractGenericFunctionWizard<?, ?>> {
 
+		private final FeatureChainingConfigurationPage parentPage;
 		private final List<TypeEntityDefinition> joinTypes;
 		private final TypeEntityDefinition joinTarget;
 		private final int pageIdx;
@@ -305,6 +308,7 @@ public class FeatureChainingConfigurationPage extends
 					+ " and "
 					+ AlignmentUtil.getTypeEntity(joinConditions.get(chainIdx).joinProperty)
 							.getDefinition().getDisplayName(), null);
+			this.parentPage = FeatureChainingConfigurationPage.this;
 			this.joinCondition = joinConditions.get(chainIdx);
 			this.message = "Please select target for nested source type "
 					+ AlignmentUtil.getTypeEntity(joinCondition.joinProperty).getDefinition()
@@ -546,6 +550,9 @@ public class FeatureChainingConfigurationPage extends
 			else {
 				conf.setMappingName(null);
 			}
+
+			// Update feature chaining parameter
+			parentPage.updateConfiguration(parentPage.getWizard().getProvider());
 
 			setMessage();
 		}

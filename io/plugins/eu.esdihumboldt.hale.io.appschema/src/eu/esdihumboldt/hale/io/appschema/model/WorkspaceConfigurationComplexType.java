@@ -30,9 +30,9 @@ import org.w3c.dom.NodeList;
 import eu.esdihumboldt.hale.common.core.io.ComplexValueType;
 
 /**
- * TODO Type description
+ * Complex value for {@link WorkspaceConfiguration}.
  * 
- * @author stefano
+ * @author Stefano Costa, GeoSolutions
  */
 public class WorkspaceConfigurationComplexType implements
 		ComplexValueType<WorkspaceConfiguration, Void> {
@@ -128,7 +128,7 @@ public class WorkspaceConfigurationComplexType implements
 					workspaceEl.appendChild(nameEl);
 
 					Element namespaceEl = doc.createElementNS(APP_SCHEMA_NAMESPACE, "namespace");
-					namespaceEl.setTextContent(workspace.getNamespace());
+					namespaceEl.setTextContent(workspace.getNamespaceUri());
 					workspaceEl.appendChild(namespaceEl);
 
 					Element isolatedEl = doc.createElementNS(APP_SCHEMA_NAMESPACE, "isolated");
@@ -141,6 +141,8 @@ public class WorkspaceConfigurationComplexType implements
 						featureTypeEl.setTextContent(featureType);
 						workspaceEl.appendChild(featureTypeEl);
 					}
+
+					workspaceConfEl.appendChild(workspaceEl);
 				}
 			}
 

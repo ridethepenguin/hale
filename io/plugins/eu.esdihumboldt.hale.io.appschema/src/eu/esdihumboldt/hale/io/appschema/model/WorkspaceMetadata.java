@@ -21,9 +21,9 @@ import java.util.TreeSet;
 import com.google.common.base.Strings;
 
 /**
- * TODO Type description
+ * Class holding metadata about a single workspace.
  * 
- * @author stefano
+ * @author Stefano Costa, GeoSolutions
  */
 public class WorkspaceMetadata implements Comparable<WorkspaceMetadata> {
 
@@ -33,6 +33,17 @@ public class WorkspaceMetadata implements Comparable<WorkspaceMetadata> {
 	private boolean isolated;
 	private Set<String> featureTypes;
 
+	/**
+	 * Constructor.
+	 * 
+	 * <p>
+	 * Both arguments must be not null nor empty.
+	 * </p>
+	 * 
+	 * @param defaultName the default workspace name, i.e. the one that would be
+	 *            picked by the mapping generator
+	 * @param namespace the namespace URI associated to the workspace
+	 */
 	public WorkspaceMetadata(String defaultName, String namespace) {
 		if (Strings.isNullOrEmpty(defaultName)) {
 			throw new IllegalArgumentException("Workspace default name must be provided");
@@ -47,20 +58,29 @@ public class WorkspaceMetadata implements Comparable<WorkspaceMetadata> {
 	}
 
 	/**
-	 * @return the defaultName
+	 * @return the default workspace name
 	 */
 	public String getDefaultName() {
 		return defaultName;
 	}
 
-	public String getNamespace() {
+	/**
+	 * @return the namespace URI
+	 */
+	public String getNamespaceUri() {
 		return namespace;
 	}
 
+	/**
+	 * @return the actual workspace name
+	 */
 	public String getName() {
 		return name;
 	}
 
+	/**
+	 * @param name the workspace name to set
+	 */
 	public void setName(String name) {
 		if (Strings.isNullOrEmpty(name)) {
 			throw new IllegalArgumentException("Workspace name cannot be empty");
@@ -68,18 +88,47 @@ public class WorkspaceMetadata implements Comparable<WorkspaceMetadata> {
 		this.name = name;
 	}
 
+	/**
+	 * Tests if the currently set name matches the default name.
+	 * 
+	 * @return {@code true} if the current name is equal to the default name,
+	 *         {@code false} otherwise
+	 */
 	public boolean hasDefaultName() {
 		return name.equals(defaultName);
 	}
 
+	/**
+	 * The value of the {@code isolated} attribute. By default is is
+	 * {@code false}.
+	 * 
+	 * @return {@code true} if the workspace is isolated, {@code false}
+	 *         otherwise
+	 */
 	public boolean isIsolated() {
 		return isolated;
 	}
 
+	/**
+	 * Sets the value of the {@code isolated} attribute.
+	 * 
+	 * @param isolated {@code true} if the workspace is isolated, {@code false}
+	 *            otherwise
+	 */
 	public void setIsolated(boolean isolated) {
 		this.isolated = isolated;
 	}
 
+	/**
+	 * Returns the names of the feature types which belong to the workspace.
+	 * 
+	 * <p>
+	 * The returned collection is a reference to the one held internally, so it
+	 * is intended to be modified by client code.
+	 * </p>
+	 * 
+	 * @return the names of the feature types belonging to the workspace
+	 */
 	public Set<String> getFeatureTypes() {
 		if (featureTypes == null) {
 			featureTypes = new TreeSet<>();

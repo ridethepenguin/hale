@@ -18,12 +18,20 @@ package eu.esdihumboldt.hale.io.appschema.writer;
 import javax.xml.namespace.QName;
 
 /**
- * TODO Type description
+ * Common interface for unique mapping name generation strategies.
  * 
- * @author stefano
+ * @author Stefano Costa, GeoSolutions
  */
 public interface UniqueMappingNameGenerator {
 
+	/**
+	 * Generates a universally unique mapping name for the provided feature type
+	 * name.
+	 * 
+	 * @param featureTypeName the name of the feature type for which a mapping
+	 *            name must be generated
+	 * @return a universally unique mapping name
+	 */
 	public String generateUniqueMappingName(QName featureTypeName);
 
 }

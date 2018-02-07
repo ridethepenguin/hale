@@ -64,9 +64,15 @@ import eu.esdihumboldt.hale.ui.io.ExportWizard;
 import eu.esdihumboldt.hale.ui.io.config.AbstractConfigurationPage;
 
 /**
- * TODO Type description
+ * Configuration page for workspace related settings.
  * 
- * @author stefano
+ * <p>
+ * Allows users to change the name and the value of the isolated attribute for
+ * all workspaces that will be created in GeoServer when the App-Schema mapping
+ * is published.
+ * </p>
+ * 
+ * @author Stefano Costa, GeoSolutions
  */
 public class WorkspaceConfigurationPage
 		extends
@@ -230,6 +236,14 @@ public class WorkspaceConfigurationPage
 					}
 				}
 			}
+
+			// remove workspaces that contain no features
+			workspaceConf.getWorkspaces().forEach((ws) -> {
+				if (ws.getFeatureTypes().isEmpty()) {
+					workspaceConf.removeWorkspace(ws.getNamespaceUri());
+				}
+			});
+
 			workspaceTableViewer.setInput(workspaceConf.getWorkspaces());
 			reporter.setSuccess(true);
 		} catch (Exception e) {
@@ -362,7 +376,7 @@ public class WorkspaceConfigurationPage
 		@Override
 		public String getText(Object element) {
 			WorkspaceMetadata conf = (WorkspaceMetadata) element;
-			return conf.getNamespace();
+			return conf.getNamespaceUri();
 		}
 	}
 
@@ -384,7 +398,7 @@ public class WorkspaceConfigurationPage
 		private final CellEditor editor;
 
 		/**
-		 * @param viewer
+		 * @param viewer the table viewer
 		 */
 		public WorkspaceNameEditingSupport(TableViewer viewer) {
 			super(viewer);
@@ -457,7 +471,7 @@ public class WorkspaceConfigurationPage
 		private final TableViewer viewer;
 
 		/**
-		 * @param viewer
+		 * @param viewer the table viewer
 		 */
 		public WorkspaceIsolatedEditingSupport(TableViewer viewer) {
 			super(viewer);

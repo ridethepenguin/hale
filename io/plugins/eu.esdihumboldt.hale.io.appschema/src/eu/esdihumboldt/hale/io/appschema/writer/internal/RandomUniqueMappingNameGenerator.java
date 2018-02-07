@@ -25,9 +25,11 @@ import com.google.common.base.Strings;
 import eu.esdihumboldt.hale.io.appschema.writer.UniqueMappingNameGenerator;
 
 /**
- * TODO Type description
+ * Unique mapping name generator strategy that generates universally unique
+ * names by appending the output of {@link UUID#randomUUID()} to the provided
+ * feature type name.
  * 
- * @author stefano
+ * @author Stefano Costa, GeoSolutions
  */
 public class RandomUniqueMappingNameGenerator implements UniqueMappingNameGenerator {
 

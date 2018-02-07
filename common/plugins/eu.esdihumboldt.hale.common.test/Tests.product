@@ -7,7 +7,7 @@
    </configIni>
 
    <launcherArgs>
-      <programArgs>-consoleLog -clean -class GeoServer*Test
+      <programArgs>-consoleLog -clean -class AppSchema*Test
       </programArgs>
       <vmArgs>-Xmx1200M
 -Dosgi.framework.extensions=org.eclipse.equinox.weaving.hook
