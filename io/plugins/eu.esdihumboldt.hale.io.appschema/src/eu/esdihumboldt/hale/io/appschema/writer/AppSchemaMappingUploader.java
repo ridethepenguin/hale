@@ -111,10 +111,18 @@ public class AppSchemaMappingUploader extends AbstractAppSchemaConfigurator {
 	}
 
 	private void throwIfAttributesDontMatch(Namespace nsNew, Namespace nsExisting) {
+		Object newUri = nsNew.getAttribute(Namespace.URI);
+		Object existingUri = nsExisting.getAttribute(Namespace.URI);
+		if (!newUri.equals(existingUri)) {
+			throw new ResourceException("Namespace \"" + nsNew.name() + "\""
+					+ " exists, but its URI is \"" + existingUri + "\" instead of \"" + newUri
+					+ "\"");
+		}
+
 		Object newIsolatedAttr = nsNew.getAttribute(Namespace.ISOLATED);
 		Object existingIsolatedAttr = nsExisting.getAttribute(Namespace.ISOLATED);
 		if (!newIsolatedAttr.equals(existingIsolatedAttr)) {
-			// attributes don't match, play it safe and throw exception
+			// isolated attributes don't match, play it safe and throw exception
 			throw new ResourceException("Namespace \"" + nsNew.name()
 					+ " exists, but the value of its \"isolated\" attribute is \""
 					+ existingIsolatedAttr + "\" instead of \"" + newIsolatedAttr + "\"");

@@ -7,7 +7,7 @@
    </configIni>
 
    <launcherArgs>
-      <programArgs>-consoleLog -clean -class AppSchema*Test
+      <programArgs>-consoleLog -clean
       </programArgs>
       <vmArgs>-Xmx1200M
 -Dosgi.framework.extensions=org.eclipse.equinox.weaving.hook

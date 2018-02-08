@@ -20,9 +20,9 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 /**
- * TODO Type description
+ * Activator class, controls the plug-in lifecycle.
  * 
- * @author stefano
+ * @author Stefano Costa, GeoSolutions
  */
 public class AppSchemaUIPlugin extends AbstractUIPlugin {
 

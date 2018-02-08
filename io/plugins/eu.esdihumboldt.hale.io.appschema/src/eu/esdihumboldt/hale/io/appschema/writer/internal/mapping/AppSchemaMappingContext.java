@@ -218,7 +218,8 @@ public class AppSchemaMappingContext {
 			return null;
 		}
 
-		QName typeName = targetType.getName();
+		QName typeName = new QName(targetType.getName().getNamespaceURI(),
+				targetType.getDisplayName());
 		String mappingName = null;
 
 		if (mappingNames.containsKey(typeName)) {

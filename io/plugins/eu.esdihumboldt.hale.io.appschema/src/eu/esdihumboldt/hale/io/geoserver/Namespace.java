@@ -122,7 +122,8 @@ public class Namespace extends AbstractResource {
 						&& !uri.trim().isEmpty()) {
 					// create new namespace only if prefix and uri attributes
 					// are present
-					namespace = ResourceBuilder.namespace(prefix).build();
+					namespace = ResourceBuilder.namespace(prefix).setAttribute(Namespace.URI, uri)
+							.build();
 
 					Element idEl = AppSchemaIO.getFirstElementByTagName(namespaceEl, ELEMENT_ID);
 					if (idEl != null && idEl.getTextContent() != null) {

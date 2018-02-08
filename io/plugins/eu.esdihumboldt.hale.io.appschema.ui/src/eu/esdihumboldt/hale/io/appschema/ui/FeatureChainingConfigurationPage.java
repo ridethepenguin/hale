@@ -279,6 +279,12 @@ public class FeatureChainingConfigurationPage
 		}
 	}
 
+	/**
+	 * Configuration pain for a single link in the feature chain, i.e. a join
+	 * between one container type and one nested type.
+	 * 
+	 * @author Stefano Costa, GeoSolutions
+	 */
 	public class ChainPage extends HaleWizardPage<AbstractGenericFunctionWizard<?, ?>> {
 
 		private final FeatureChainingConfigurationPage parentPage;
@@ -299,6 +305,17 @@ public class FeatureChainingConfigurationPage
 		private TableViewer joinTypesViewer;
 		private Button checkUniqueMapping;
 
+		/**
+		 * Constructor.
+		 * 
+		 * @param pageIdx the page index, relative to the parent feature
+		 *            chaining configuration page
+		 * @param joinCellId the ID of the join cell associated to this page
+		 * @param chainIdx the chain index
+		 * @param joinTypes the types to join
+		 * @param joinConditions the join conditions
+		 * @param joinTarget the join target type
+		 */
 		protected ChainPage(int pageIdx, String joinCellId, int chainIdx,
 				List<TypeEntityDefinition> joinTypes, List<JoinCondition> joinConditions,
 				TypeEntityDefinition joinTarget) {
@@ -545,7 +562,7 @@ public class FeatureChainingConfigurationPage
 			if (uniqueMapping) {
 				// TODO: verify this is correct
 				conf.setMappingName(mappingNameGenerator.generateUniqueMappingName(nestedTypeTarget
-						.getType().getName()));
+						.getDefinition().getName()));
 			}
 			else {
 				conf.setMappingName(null);
