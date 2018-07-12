@@ -108,6 +108,7 @@ https://www.wetransform.to/services/support/
       <feature id="eu.esdihumboldt.hale.io.feature.msaccess"/>
       <feature id="eu.esdihumboldt.hale.io.feature.mssql"/>
       <feature id="eu.esdihumboldt.hale.io.feature.deegree"/>
+      <feature id="org.eclipse.equinox.p2.core.feature"/>
    </features>
 
    <configurations>
@@ -150,12 +151,5 @@ https://www.wetransform.to/services/support/
       <plugin id="org.springframework.core" autoStart="true" startLevel="0" />
       <property name="org.eclipse.update.reconcile" value="false" />
    </configurations>
-
-   <preferencesInfo>
-      <targetfile overwrite="false"/>
-   </preferencesInfo>
-
-   <cssInfo>
-   </cssInfo>
 
 </product>
